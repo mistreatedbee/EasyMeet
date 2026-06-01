@@ -1,5 +1,12 @@
 {
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
-  ]
+  ],
+  "build": {
+    "env": {
+      "VITE_INSFORGE_URL": "https://pv755ixk.us-east.insforge.app",
+      "VITE_INSFORGE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3OC0xMjM0LTU2NzgtOTBhYi1jZGVmMTIzNDU2NzgiLCJlbWFpbCI6ImFub25AaW5zZm9yZ2UuY29tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzMjIwNzV9.xPVUlAqtAdrW1baQ-Zo04D12l-4RPhC3I_sxbXNEQx0",
+      "VITE_LIVEKIT_URL": "wss://easy-meet-0eq9u6zx.livekit.cloud"
+    }
+  }
 }

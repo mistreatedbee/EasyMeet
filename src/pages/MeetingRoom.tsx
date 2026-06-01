@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {
   LiveKitRoom,
   RoomAudioRenderer,
+  StartAudio,
   useTrackToggle,
   useConnectionState,
 } from '@livekit/components-react';
@@ -251,6 +252,12 @@ function MeetingRoomInner({ meetingCode, isHost }: { meetingCode: string; isHost
           </div>
         )}
       </div>
+
+      {/* Autoplay unblock — shown by browsers that block audio until user interaction */}
+      <StartAudio
+        label="🔊 Click to enable audio"
+        className="absolute inset-x-4 bottom-28 mx-auto max-w-sm bg-primary text-white text-center py-4 px-6 rounded-2xl text-lg font-bold shadow-2xl z-50 cursor-pointer hover:bg-primary-dark transition-colors"
+      />
 
       {/* ── Control Bar ── */}
       <MeetingControlBar
