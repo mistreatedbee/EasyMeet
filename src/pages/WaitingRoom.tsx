@@ -71,6 +71,8 @@ export function WaitingRoom() {
 
   const handleAdmitted = async () => {
     if (!meetingCode) return;
+    sessionStorage.setItem('isHost', 'false');
+    console.info('[EasyMeet] Student admitted to meeting', { meetingCode, participantName });
     try {
       if (participantId) {
         await insforge.database
@@ -80,7 +82,9 @@ export function WaitingRoom() {
       }
       const token = await getLivekitToken(meetingCode, participantName, false);
       sessionStorage.setItem('livekitToken', token);
-    } catch {
+      console.info('[EasyMeet] LiveKit token obtained for student');
+    } catch (err) {
+      console.warn('[EasyMeet] LiveKit token failed, joining without video', err);
       sessionStorage.setItem('livekitToken', '');
     }
     setStatus('admitted');

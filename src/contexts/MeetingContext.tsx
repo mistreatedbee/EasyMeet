@@ -112,15 +112,20 @@ export function MeetingProvider({ children }: { children: React.ReactNode }) {
     (async () => {
       await insforge.realtime.connect();
       await insforge.realtime.subscribe(channel);
-      if (mounted) setConnected(true);
+      if (mounted) {
+        setConnected(true);
+        console.info('[EasyMeet] Realtime connected to', channel);
+      }
 
       insforge.realtime.on('chat_message', (payload: ChatMessage) => {
         if (!mounted) return;
+        console.info('[EasyMeet] Chat from', payload.sender_name, ':', payload.message);
         setChatMessages((prev) => [...prev, payload]);
       });
 
       insforge.realtime.on('participant_muted', (payload: { participantId: string; isMuted: boolean }) => {
         if (!mounted) return;
+        console.info('[EasyMeet] Participant mute change', payload);
         setParticipants((prev) =>
           prev.map((p) => p.id === payload.participantId ? { ...p, is_muted: payload.isMuted } : p)
         );
@@ -135,6 +140,7 @@ export function MeetingProvider({ children }: { children: React.ReactNode }) {
 
       insforge.realtime.on('hand_raised', (payload: { participantId: string }) => {
         if (!mounted) return;
+        console.info('[EasyMeet] Hand raised by', payload.participantId);
         setParticipants((prev) =>
           prev.map((p) => p.id === payload.participantId ? { ...p, hand_raised: true } : p)
         );
@@ -142,6 +148,7 @@ export function MeetingProvider({ children }: { children: React.ReactNode }) {
 
       insforge.realtime.on('hand_lowered', (payload: { participantId: string }) => {
         if (!mounted) return;
+        console.info('[EasyMeet] Hand lowered by', payload.participantId);
         setParticipants((prev) =>
           prev.map((p) => p.id === payload.participantId ? { ...p, hand_raised: false } : p)
         );
@@ -158,6 +165,7 @@ export function MeetingProvider({ children }: { children: React.ReactNode }) {
     return () => {
       mounted = false;
       insforge.realtime.unsubscribe(channel);
+      console.info('[EasyMeet] Unsubscribed from', channel);
     };
   }, [meeting]);
 

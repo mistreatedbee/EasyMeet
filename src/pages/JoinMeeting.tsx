@@ -60,6 +60,25 @@ export function JoinMeeting() {
     setJoining(true);
     setError('');
 
+    // Check microphone permission before joining — warn but never block
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+      stream.getTracks().forEach(t => t.stop()); // release immediately
+      console.info('[EasyMeet] Microphone permission granted');
+    } catch (err: unknown) {
+      const name_ = (err as { name?: string }).name;
+      if (name_ === 'NotAllowedError' || name_ === 'PermissionDeniedError') {
+        setError('⚠️ Microphone access was denied. Others won\'t hear you, but you can still join.');
+      } else if (name_ === 'NotFoundError' || name_ === 'DevicesNotFoundError') {
+        setError('⚠️ No microphone detected. You can still join and participate via chat.');
+      }
+      // Don't block — fall through and join anyway
+      setJoining(false);
+      // Give user a moment to read the warning, then continue after 2 s
+      await new Promise(r => setTimeout(r, 2000));
+      setJoining(true);
+    }
+
     const { data: participant, error: dbErr } = await insforge.database
       .from('participants')
       .insert([{
@@ -167,7 +186,7 @@ export function JoinMeeting() {
             )}
 
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-base">
+              <div className={`rounded-xl px-4 py-3 text-base ${error.startsWith('⚠️') ? 'bg-amber-50 border border-amber-200 text-amber-800' : 'bg-red-50 border border-red-200 text-red-700'}`}>
                 {error}
               </div>
             )}

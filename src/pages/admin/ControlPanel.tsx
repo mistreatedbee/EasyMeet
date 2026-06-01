@@ -184,8 +184,10 @@ export function ControlPanel() {
     if (hostToken) sessionStorage.setItem('livekitToken', hostToken);
     sessionStorage.setItem('meetingCode', meetingCode ?? '');
     if (meeting) sessionStorage.setItem('meetingId', meeting.id);
+    sessionStorage.setItem('isHost', 'true');
     const hostName = user?.profile?.name ?? user?.email ?? 'Host';
     sessionStorage.setItem('participantName', hostName);
+    console.info('[EasyMeet] Host starting meeting', { meetingCode, hostName });
 
     // Insert host as participant if not already present
     const { data: existing } = await insforge.database
