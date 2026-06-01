@@ -19,6 +19,7 @@ interface MeetingControlBarProps {
   setHandRaised: (val: boolean) => void;
   chatOpen: boolean;
   setChatOpen: (val: boolean) => void;
+  onLeave?: () => void;
 }
 export function MeetingControlBar({
   micOn,
@@ -28,12 +29,17 @@ export function MeetingControlBar({
   handRaised,
   setHandRaised,
   chatOpen,
-  setChatOpen
+  setChatOpen,
+  onLeave,
 }: MeetingControlBarProps) {
   const navigate = useNavigate();
   const handleLeave = () => {
     if (window.confirm('Are you sure you want to leave the meeting?')) {
-      navigate('/');
+      if (onLeave) {
+        onLeave();
+      } else {
+        navigate('/');
+      }
     }
   };
   const ControlButton = ({

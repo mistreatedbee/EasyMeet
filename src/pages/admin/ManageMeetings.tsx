@@ -1,88 +1,84 @@
-import React, { useState } from 'react';
-import {
-  SearchIcon,
-  PlayIcon,
-  CopyIcon,
-  EditIcon,
-  TrashIcon,
-  MoreVerticalIcon } from
-'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { SearchIcon, CopyIcon, TrashIcon, ExternalLinkIcon } from 'lucide-react';
 import { Card } from '../../components/Card';
 import { Button } from '../../components/Button';
-export function ManageMeetings() {
-  const [activeTab, setActiveTab] = useState<'upcoming' | 'past' | 'recurring'>(
-    'upcoming'
-  );
-  const meetings = [
-  {
-    id: 1,
-    title: 'Weekly Staff Sync',
-    date: 'Oct 15, 2023',
-    time: '9:00 AM',
-    type: 'upcoming'
-  },
-  {
-    id: 2,
-    title: 'Parent Teacher Conf',
-    date: 'Oct 16, 2023',
-    time: '3:00 PM',
-    type: 'upcoming'
-  },
-  {
-    id: 3,
-    title: 'Sunday Service',
-    date: 'Oct 12, 2023',
-    time: '10:00 AM',
-    type: 'past'
-  },
-  {
-    id: 4,
-    title: 'Board Meeting Q4',
-    date: 'Oct 11, 2023',
-    time: '2:00 PM',
-    type: 'past'
-  },
-  {
-    id: 5,
-    title: 'Math Class - Grade 5',
-    date: 'Oct 10, 2023',
-    time: '9:00 AM',
-    type: 'past'
-  },
-  {
-    id: 6,
-    title: 'Daily Standup',
-    date: 'Every Weekday',
-    time: '10:00 AM',
-    type: 'recurring'
-  }];
+import { insforge } from '../../lib/insforge';
+import { useAuth } from '../../contexts/AuthContext';
+import { cn } from '../../utils/cn';
 
-  const filteredMeetings = meetings.filter((m) => m.type === activeTab);
+interface Meeting {
+  id: string;
+  title: string;
+  subject: string | null;
+  meeting_code: string;
+  status: 'waiting' | 'active' | 'ended';
+  created_at: string;
+}
+
+export function ManageMeetings() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState<'active' | 'waiting' | 'ended'>('active');
+  const [meetings, setMeetings] = useState<Meeting[]>([]);
+  const [search, setSearch] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      setLoading(true);
+      const { data } = await insforge.database
+        .from('meetings')
+        .select('id, title, subject, meeting_code, status, created_at')
+        .eq('host_id', user.id)
+        .order('created_at', { ascending: false });
+      setMeetings((data as Meeting[]) ?? []);
+      setLoading(false);
+    })();
+  }, [user]);
+
+  const filtered = meetings.filter(
+    (m) => m.status === activeTab && m.title.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const handleDelete = async (m: Meeting) => {
+    if (!window.confirm(`Delete "${m.title}"? This cannot be undone.`)) return;
+    await insforge.database.from('meetings').delete().eq('id', m.id);
+    setMeetings((prev) => prev.filter((x) => x.id !== m.id));
+  };
+
+  const handleCopyLink = (m: Meeting) => {
+    navigator.clipboard.writeText(`${window.location.origin}/join/${m.meeting_code}`);
+    setCopied(m.id);
+    setTimeout(() => setCopied(null), 2000);
+  };
+
+  const formatDate = (iso: string) =>
+    new Date(iso).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+
   return (
     <div className="space-y-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-ink-primary mb-2">
-            Manage Meetings
-          </h1>
-          <p className="text-xl text-ink-secondary">
-            View and edit your scheduled and past meetings.
-          </p>
-        </div>
+      <div>
+        <h1 className="text-3xl sm:text-4xl font-bold text-ink-primary mb-2">Manage Meetings</h1>
+        <p className="text-xl text-ink-secondary">View and manage all your meetings.</p>
       </div>
 
       <Card padding="none">
         <div className="p-4 sm:p-6 border-b border-border flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="flex gap-2 w-full sm:w-auto bg-muted p-1 rounded-xl">
-            {(['upcoming', 'past', 'recurring'] as const).map((tab) =>
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-lg font-bold capitalize transition-colors ${activeTab === tab ? 'bg-white text-ink-primary shadow-sm' : 'text-ink-secondary hover:text-ink-primary'}`}>
-              
+            {(['active', 'waiting', 'ended'] as const).map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={cn(
+                  'flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-lg font-bold capitalize transition-colors',
+                  activeTab === tab ? 'bg-white text-ink-primary shadow-sm' : 'text-ink-secondary hover:text-ink-primary'
+                )}>
                 {tab}
               </button>
-            )}
+            ))}
           </div>
 
           <div className="relative w-full sm:w-64">
@@ -92,8 +88,10 @@ export function ManageMeetings() {
             <input
               type="text"
               className="block w-full pl-10 pr-4 py-3 border-2 border-border rounded-xl text-lg focus:ring-4 focus:ring-primary/20 focus:border-primary transition-all"
-              placeholder="Search meetings..." />
-            
+              placeholder="Search meetings..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
           </div>
         </div>
 
@@ -102,81 +100,64 @@ export function ManageMeetings() {
             <thead>
               <tr className="bg-slate-50 text-ink-secondary text-lg">
                 <th className="p-4 sm:p-6 font-medium">Meeting Title</th>
-                <th className="p-4 sm:p-6 font-medium">Date</th>
-                <th className="p-4 sm:p-6 font-medium">Time</th>
+                <th className="p-4 sm:p-6 font-medium">Created</th>
+                <th className="p-4 sm:p-6 font-medium">Code</th>
                 <th className="p-4 sm:p-6 font-medium text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {filteredMeetings.length > 0 ?
-              filteredMeetings.map((m) =>
-              <tr
-                key={m.id}
-                className="hover:bg-slate-50 transition-colors">
-                
-                    <td className="p-4 sm:p-6 text-xl font-bold text-ink-primary">
-                      {m.title}
+              {loading ? (
+                <tr><td colSpan={4} className="p-12 text-center text-xl text-ink-secondary">Loading...</td></tr>
+              ) : filtered.length === 0 ? (
+                <tr><td colSpan={4} className="p-12 text-center text-xl text-ink-secondary">No {activeTab} meetings found.</td></tr>
+              ) : (
+                filtered.map((m) => (
+                  <tr key={m.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="p-4 sm:p-6">
+                      <div className="text-xl font-bold text-ink-primary">{m.title}</div>
+                      {m.subject && <div className="text-sm text-ink-secondary">{m.subject}</div>}
                     </td>
-                    <td className="p-4 sm:p-6 text-lg text-ink-secondary">
-                      {m.date}
-                    </td>
-                    <td className="p-4 sm:p-6 text-lg text-ink-secondary">
-                      {m.time}
+                    <td className="p-4 sm:p-6 text-lg text-ink-secondary">{formatDate(m.created_at)}</td>
+                    <td className="p-4 sm:p-6">
+                      <span className="font-mono text-base bg-muted px-2 py-1 rounded">{m.meeting_code}</span>
                     </td>
                     <td className="p-4 sm:p-6 text-right">
                       <div className="flex justify-end gap-2">
-                        {activeTab === 'upcoming' &&
-                    <Button
-                      variant="success"
-                      size="md"
-                      className="py-2 px-4 text-base"
-                      icon={<PlayIcon size={18} />}>
-                      
-                            Start
+                        {m.status !== 'ended' && (
+                          <Button
+                            variant="success"
+                            size="md"
+                            className="py-2 px-4 text-base"
+                            icon={<ExternalLinkIcon size={18} />}
+                            onClick={() => navigate(`/admin/control/${m.meeting_code}`)}>
+                            Manage
                           </Button>
-                    }
+                        )}
                         <Button
-                      variant="outline"
-                      size="md"
-                      className="py-2 px-3"
-                      aria-label="Copy Link">
-                      
-                          <CopyIcon size={18} />
+                          variant="outline"
+                          size="md"
+                          className="py-2 px-3"
+                          aria-label="Copy Link"
+                          onClick={() => handleCopyLink(m)}>
+                          {copied === m.id ? '✓' : <CopyIcon size={18} />}
                         </Button>
                         <Button
-                      variant="outline"
-                      size="md"
-                      className="py-2 px-3"
-                      aria-label="Edit">
-                      
-                          <EditIcon size={18} />
-                        </Button>
-                        <Button
-                      variant="ghost"
-                      size="md"
-                      className="py-2 px-3 text-danger hover:bg-red-50"
-                      aria-label="Delete">
-                      
+                          variant="ghost"
+                          size="md"
+                          className="py-2 px-3 text-danger hover:bg-red-50"
+                          aria-label="Delete"
+                          onClick={() => handleDelete(m)}>
                           <TrashIcon size={18} />
                         </Button>
                       </div>
                     </td>
                   </tr>
-              ) :
-
-              <tr>
-                  <td
-                  colSpan={4}
-                  className="p-12 text-center text-xl text-ink-secondary">
-                  
-                    No {activeTab} meetings found.
-                  </td>
-                </tr>
-              }
+                ))
+              )}
             </tbody>
           </table>
         </div>
       </Card>
-    </div>);
-
+    </div>
+  );
 }

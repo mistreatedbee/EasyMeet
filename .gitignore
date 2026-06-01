@@ -12,6 +12,13 @@ dist
 dist-ssr
 *.local
 
+# Environment & secrets
+.env
+.env.*
+.mcp.json
+insforge_*.txt
+.claude/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
