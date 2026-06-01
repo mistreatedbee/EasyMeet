@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import { useScreenInit } from './useScreenInit';
 import { NavBar } from './components/NavBar';
 import { Footer } from './components/Footer';
@@ -60,8 +60,8 @@ export function App() {
             {/* Meeting Flow Routes — dynamic meetingCode param */}
             <Route element={<MeetingLayout />}>
               <Route path="/join/:meetingCode" element={<JoinMeeting />} />
-              {/* Legacy static route redirects to landing if no code */}
-              <Route path="/join" element={<Landing />} />
+              {/* /join without a code → back to home */}
+              <Route path="/join" element={<Navigate to="/" replace />} />
               <Route path="/waiting/:meetingCode" element={<WaitingRoom />} />
               <Route path="/meeting/:meetingCode" element={<MeetingRoom />} />
             </Route>
