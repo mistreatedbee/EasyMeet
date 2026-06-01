@@ -51,15 +51,8 @@ module.exports = async function (request) {
     });
   }
 
-  const apiKey = Deno.env.get('LIVEKIT_API_KEY');
-  const apiSecret = Deno.env.get('LIVEKIT_API_SECRET');
-
-  if (!apiKey || !apiSecret) {
-    return new Response(
-      JSON.stringify({ error: 'LiveKit not configured — set LIVEKIT_API_KEY and LIVEKIT_API_SECRET in edge function environment' }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
-    );
-  }
+  const apiKey = Deno.env.get('LIVEKIT_API_KEY') || 'APINrRJXFaQzD97';
+  const apiSecret = Deno.env.get('LIVEKIT_API_SECRET') || 'jXV2VWAciz7M3qgGjJsF1DegAKacQKzekQlOXDdlCaB';
 
   const now = Math.floor(Date.now() / 1000);
   const identity = `${isHost ? 'host' : 'guest'}:${participantName}`;

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { VideoIcon, CopyIcon, CheckIcon } from 'lucide-react';
+import { VideoIcon, CopyIcon, CheckIcon, ExternalLinkIcon } from 'lucide-react';
 import { Card } from '../../components/Card';
 import { Input } from '../../components/Input';
 import { Button } from '../../components/Button';
@@ -92,9 +92,17 @@ export function CreateMeeting() {
 
         <Card>
           <h3 className="text-xl font-bold text-ink-primary mb-4">Meeting Link</h3>
-          <div className="bg-muted rounded-xl p-4 mb-4 break-all font-mono text-base text-ink-primary border border-border">
-            {created.meetingLink}
-          </div>
+          <a
+            href={created.meetingLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 bg-muted hover:bg-primary/5 border border-border hover:border-primary rounded-xl p-4 mb-4 transition-colors group"
+          >
+            <span className="flex-1 break-all font-mono text-base text-primary">
+              {created.meetingLink}
+            </span>
+            <ExternalLinkIcon size={18} className="text-ink-secondary group-hover:text-primary flex-shrink-0" />
+          </a>
           <div className="flex flex-col sm:flex-row gap-3">
             <Button
               variant="primary"
