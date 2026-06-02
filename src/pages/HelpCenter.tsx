@@ -248,7 +248,7 @@ function ContactSupport() {
 
       <div className="flex flex-col sm:flex-row justify-center gap-6">
         <Button size="xl" icon={<PhoneIcon size={24} />}>
-          Call 1-800-EASY-MEET
+          Call 073 153 1188
         </Button>
         <Button
           variant="outline"
