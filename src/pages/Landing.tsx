@@ -32,7 +32,7 @@ export function Landing() {
       <TestimonialsSection />
       <FAQSection />
       <ContactSection />
-      <Footer />   {/* NEW – developer credit */}
+      <Footer />
     </div>
   );
 }
@@ -46,12 +46,10 @@ function JoinWithCodeModal({ onClose }: { onClose: () => void }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // Focus input on mount
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
 
-  // Close on Escape key
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -60,7 +58,6 @@ function JoinWithCodeModal({ onClose }: { onClose: () => void }) {
     return () => window.removeEventListener('keydown', handleKey);
   }, [onClose]);
 
-  // Close on outside click
   const handleBackdrop = useCallback(
     (e: React.MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
@@ -96,7 +93,6 @@ function JoinWithCodeModal({ onClose }: { onClose: () => void }) {
         transition={{ duration: 0.2 }}
         className="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-border p-6 sm:p-8 relative"
       >
-        {/* Close button */}
         <button
           onClick={onClose}
           aria-label="Close dialog"
@@ -149,7 +145,6 @@ function HeroSection() {
       aria-label="Hero"
       className="relative pt-20 sm:pt-28 pb-32 overflow-hidden bg-background"
     >
-      {/* Decorative background shapes */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl" />
         <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-primary/10 rounded-full blur-3xl" />
@@ -157,7 +152,6 @@ function HeroSection() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center gap-16">
-        {/* Left column */}
         <div className="flex-1 text-center lg:text-left">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -184,7 +178,6 @@ function HeroSection() {
             transition={{ delay: 0.2 }}
             className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start"
           >
-            {/* Join button with modal */}
             <div ref={wrapperRef} className="relative">
               <Button
                 variant="success"
@@ -203,7 +196,6 @@ function HeroSection() {
               </AnimatePresence>
             </div>
 
-            {/* Create meeting link */}
             <Link to="/admin/login" tabIndex={-1}>
               <Button variant="primary" size="xl" fullWidth icon={<VideoIcon size={28} />}>
                 Host a Meeting
@@ -211,7 +203,6 @@ function HeroSection() {
             </Link>
           </motion.div>
 
-          {/* Trust badge – quick social proof */}
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -223,7 +214,6 @@ function HeroSection() {
           </motion.p>
         </div>
 
-        {/* Right column – realistic mockup */}
         <div className="flex-1 w-full max-w-lg lg:max-w-none">
           <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -231,13 +221,11 @@ function HeroSection() {
             transition={{ delay: 0.3, duration: 0.6, ease: 'easeOut' }}
             className="relative"
           >
-            {/* Floating animation */}
             <motion.div
               animate={{ y: [0, -10, 0] }}
               transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
               className="relative bg-white rounded-[2.5rem] shadow-2xl p-4 border-[6px] border-slate-200 aspect-[4/3] flex flex-col overflow-hidden"
             >
-              {/* Top bar */}
               <div className="flex justify-between items-center mb-4 px-2">
                 <div className="flex items-center gap-2">
                   <UsersIcon size={18} className="text-slate-400" />
@@ -250,7 +238,6 @@ function HeroSection() {
                 </div>
               </div>
 
-              {/* 2x2 participant grid */}
               <div className="flex-1 grid grid-cols-2 gap-3">
                 {[
                   { name: 'Pastor John', bg: 'bg-blue-100', avatar: 'bg-blue-200 text-blue-500' },
@@ -272,7 +259,6 @@ function HeroSection() {
                 ))}
               </div>
 
-              {/* Control bar */}
               <div className="mt-4 flex justify-center gap-4">
                 <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-colors">
                   <MicIcon size={20} className="text-slate-600" />
@@ -286,7 +272,6 @@ function HeroSection() {
               </div>
             </motion.div>
 
-            {/* Floating badge */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -400,7 +385,6 @@ const HowItWorksSection = React.memo(() => {
         </motion.div>
 
         <div className="flex flex-col md:flex-row gap-12 relative">
-          {/* Connecting line (desktop) */}
           <div className="hidden md:block absolute top-10 left-[15%] right-[15%] h-0.5 bg-border -z-10" />
 
           {steps.map((s, idx) => (
@@ -574,7 +558,59 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
 }
 
 // ----------------------------------------------------------------------
-// FOOTER – powered by NextWave Digital Solutions
+// 8. CONTACT SECTION
+// ----------------------------------------------------------------------
+const ContactSection = React.memo(() => {
+  return (
+    <section className="py-24 bg-white relative">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 className="text-4xl font-bold text-ink-primary mb-6">Still have questions?</h2>
+        <p className="text-xl sm:text-2xl text-ink-secondary mb-12">
+          Our friendly support team is just a call or click away.
+        </p>
+
+        <div className="flex flex-col sm:flex-row justify-center gap-8 mb-12">
+          <a
+            href="tel:18003279633"
+            className="flex items-center justify-center gap-4 text-2xl font-medium text-ink-primary hover:text-primary transition-colors"
+          >
+            <PhoneIcon size={32} className="text-primary" />
+            1-800-EASY-MEET
+          </a>
+          <a
+            href="mailto:help@easymeet.example.com"
+            className="flex items-center justify-center gap-4 text-2xl font-medium text-ink-primary hover:text-primary transition-colors"
+          >
+            <MessageCircleIcon size={32} className="text-primary" />
+            help@easymeet.example.com
+          </a>
+        </div>
+
+        <Link to="/help" tabIndex={-1}>
+          <Button variant="outline" size="xl">
+            Visit Help Center
+          </Button>
+        </Link>
+
+        {/* Sticky mobile join button */}
+        <div className="fixed bottom-6 right-6 z-40 sm:hidden">
+          <Link to="/join" tabIndex={-1}>
+            <Button
+              variant="success"
+              size="lg"
+              icon={<PhoneIcon size={24} />}
+              className="rounded-full shadow-lg h-16 w-16 !p-0 flex items-center justify-center"
+              aria-label="Join a meeting"
+            />
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+});
+
+// ----------------------------------------------------------------------
+// 9. FOOTER – powered by NextWave Digital Solutions
 // ----------------------------------------------------------------------
 function Footer() {
   return (
@@ -612,20 +648,3 @@ function Footer() {
     </footer>
   );
 }
-
-        {/* Sticky mobile join button */}
-        <div className="fixed bottom-6 right-6 z-40 sm:hidden">
-          <Link to="/join" tabIndex={-1}>
-            <Button
-              variant="success"
-              size="lg"
-              icon={<PhoneIcon size={24} />}
-              className="rounded-full shadow-lg h-16 w-16 !p-0 flex items-center justify-center"
-              aria-label="Join a meeting"
-            />
-          </Link>
-        </div>
-      </div>
-    </section>
-  );
-});
