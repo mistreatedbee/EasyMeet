@@ -575,14 +575,14 @@ const ContactSection = React.memo(() => {
             className="flex items-center justify-center gap-4 text-2xl font-medium text-ink-primary hover:text-primary transition-colors"
           >
             <PhoneIcon size={32} className="text-primary" />
-            1-800-EASY-MEET
+            073 153 1188
           </a>
           <a
             href="mailto:help@easymeet.example.com"
             className="flex items-center justify-center gap-4 text-2xl font-medium text-ink-primary hover:text-primary transition-colors"
           >
             <MessageCircleIcon size={32} className="text-primary" />
-            help@easymeet.example.com
+            nextwavedigitalsolutions.co.za
           </a>
         </div>
 
