@@ -15,9 +15,6 @@ import {
   XIcon,
   StarIcon,
   MicIcon,
-  MicOffIcon,
-  VideoOffIcon,
-  MonitorUpIcon,
   UsersIcon,
 } from 'lucide-react';
 import { Button } from '../components/Button';
@@ -35,6 +32,7 @@ export function Landing() {
       <TestimonialsSection />
       <FAQSection />
       <ContactSection />
+      <Footer />   {/* NEW – developer credit */}
     </div>
   );
 }
@@ -576,39 +574,44 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
 }
 
 // ----------------------------------------------------------------------
-// 8. CONTACT – final CTA with stickiness on mobile
+// FOOTER – powered by NextWave Digital Solutions
 // ----------------------------------------------------------------------
-const ContactSection = React.memo(() => {
+function Footer() {
   return (
-    <section className="py-24 bg-white relative">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 className="text-4xl font-bold text-ink-primary mb-6">Still have questions?</h2>
-        <p className="text-xl sm:text-2xl text-ink-secondary mb-12">
-          Our friendly support team is just a call or click away.
-        </p>
-
-        <div className="flex flex-col sm:flex-row justify-center gap-8 mb-12">
+    <footer className="py-10 bg-muted border-t border-border">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-ink-secondary">
+        <p className="mb-3">
+          Powered by{' '}
           <a
-            href="tel:18003279633"
-            className="flex items-center justify-center gap-4 text-2xl font-medium text-ink-primary hover:text-primary transition-colors"
+            href="https://nextwavedigitalsolutions.co.za"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-primary hover:underline transition-colors"
           >
-            <PhoneIcon size={32} className="text-primary" />
-            1-800-EASY-MEET
+            NextWave Digital Solutions
           </a>
+        </p>
+        <div className="flex flex-wrap justify-center gap-x-6 gap-y-1 text-sm">
           <a
-            href="mailto:help@easymeet.example.com"
-            className="flex items-center justify-center gap-4 text-2xl font-medium text-ink-primary hover:text-primary transition-colors"
+            href="tel:+27731531188"
+            className="hover:text-ink-primary transition-colors"
           >
-            <MessageCircleIcon size={32} className="text-primary" />
-            help@easymeet.example.com
+            073 153 1188
+          </a>
+          <span className="hidden sm:inline text-border">|</span>
+          <a
+            href="https://nextwavedigitalsolutions.co.za"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-ink-primary transition-colors"
+          >
+            nextwavedigitalsolutions.co.za
           </a>
         </div>
-
-        <Link to="/help" tabIndex={-1}>
-          <Button variant="outline" size="xl">
-            Visit Help Center
-          </Button>
-        </Link>
+      </div>
+    </footer>
+  );
+}
 
         {/* Sticky mobile join button */}
         <div className="fixed bottom-6 right-6 z-40 sm:hidden">
