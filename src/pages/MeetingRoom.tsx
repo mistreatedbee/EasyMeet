@@ -27,7 +27,6 @@ function MeetingRoomInner({ meetingCode, isHost }: { meetingCode: string; isHost
 
   // Real LiveKit track toggles — these actually mute/unmute the tracks
   const { toggle: toggleMic, enabled: micOn } = useTrackToggle({ source: Track.Source.Microphone });
-  const { toggle: toggleCam, enabled: cameraOn } = useTrackToggle({ source: Track.Source.Camera });
   const connectionState = useConnectionState();
 
   const [handRaised, setHandRaised] = useState(false);
@@ -59,10 +58,6 @@ function MeetingRoomInner({ meetingCode, isHost }: { meetingCode: string; isHost
   useEffect(() => {
     console.info('[EasyMeet] Mic track', micOn ? 'enabled' : 'muted');
   }, [micOn]);
-
-  useEffect(() => {
-    console.info('[EasyMeet] Camera track', cameraOn ? 'enabled' : 'off');
-  }, [cameraOn]);
 
   useEffect(() => {
     console.info('[EasyMeet] Connection state:', connectionState);
@@ -263,8 +258,6 @@ function MeetingRoomInner({ meetingCode, isHost }: { meetingCode: string; isHost
       <MeetingControlBar
         micOn={micOn}
         setMicOn={() => toggleMic()}
-        cameraOn={cameraOn}
-        setCameraOn={() => toggleCam()}
         handRaised={handRaised}
         setHandRaised={() => handleRaiseHand()}
         chatOpen={chatOpen}
@@ -280,7 +273,6 @@ function MeetingRoomFallback({ meetingCode }: { meetingCode: string }) {
   const navigate = useNavigate();
   const { meeting, chatMessages, sendChat, publishEvent, loadMeeting, refreshParticipants } = useMeetingContext();
   const [micOn, setMicOn] = useState(false);
-  const [cameraOn, setCameraOn] = useState(false);
   const [handRaised, setHandRaised] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const [chatInput, setChatInput] = useState('');
@@ -398,7 +390,6 @@ function MeetingRoomFallback({ meetingCode }: { meetingCode: string }) {
 
       <MeetingControlBar
         micOn={micOn} setMicOn={setMicOn}
-        cameraOn={cameraOn} setCameraOn={setCameraOn}
         handRaised={handRaised} setHandRaised={() => handleRaiseHand()}
         chatOpen={chatOpen} setChatOpen={setChatOpen}
         onLeave={handleLeaveRoom}

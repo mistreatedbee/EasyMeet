@@ -1,31 +1,26 @@
-import React from 'react';
 import {
   MicIcon,
   MicOffIcon,
-  VideoIcon,
-  VideoOffIcon,
   HandIcon,
   MessageCircleIcon,
-  PhoneOffIcon } from
-'lucide-react';
+  PhoneOffIcon,
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '../utils/cn';
+
 interface MeetingControlBarProps {
   micOn: boolean;
   setMicOn: (val: boolean) => void;
-  cameraOn: boolean;
-  setCameraOn: (val: boolean) => void;
   handRaised: boolean;
   setHandRaised: (val: boolean) => void;
   chatOpen: boolean;
   setChatOpen: (val: boolean) => void;
   onLeave?: () => void;
 }
+
 export function MeetingControlBar({
   micOn,
   setMicOn,
-  cameraOn,
-  setCameraOn,
   handRaised,
   setHandRaised,
   chatOpen,
@@ -33,91 +28,81 @@ export function MeetingControlBar({
   onLeave,
 }: MeetingControlBarProps) {
   const navigate = useNavigate();
+
   const handleLeave = () => {
     if (window.confirm('Are you sure you want to leave the meeting?')) {
-      if (onLeave) {
-        onLeave();
-      } else {
-        navigate('/');
-      }
+      if (onLeave) onLeave();
+      else navigate('/');
     }
   };
-  const ControlButton = ({
-    active,
-    onClick,
-    icon,
-    label,
-    danger = false,
-    accent = false
 
-
-
-
-
-
-
-  }: {active: boolean;onClick: () => void;icon: React.ReactNode;label: string;danger?: boolean;accent?: boolean;}) => {
-    return (
-      <button
-        onClick={onClick}
-        className={cn(
-          'flex flex-col items-center justify-center min-w-[88px] min-h-[88px] rounded-2xl transition-all focus-visible:ring-4 focus-visible:ring-primary focus:outline-none gap-2',
-          danger ?
-          'bg-danger text-white hover:bg-red-700' :
-          accent && active ?
-          'bg-accent text-white hover:bg-orange-600' :
-          active ?
-          'bg-slate-700 text-white hover:bg-slate-600' :
-          'bg-red-100 text-red-600 hover:bg-red-200' // For muted states
-        )}>
-        
-        {icon}
-        <span className="text-sm font-bold">{label}</span>
-      </button>);
-
-  };
   return (
-    <div className="bg-slate-900 border-t border-slate-800 p-4 flex justify-center items-center gap-2 sm:gap-6 w-full overflow-x-auto">
-      <ControlButton
-        active={micOn}
-        onClick={() => setMicOn(!micOn)}
-        icon={micOn ? <MicIcon size={32} /> : <MicOffIcon size={32} />}
-        label={micOn ? 'Mute' : 'Unmute'} />
-      
-
-      <ControlButton
-        active={cameraOn}
-        onClick={() => setCameraOn(!cameraOn)}
-        icon={cameraOn ? <VideoIcon size={32} /> : <VideoOffIcon size={32} />}
-        label={cameraOn ? 'Stop Video' : 'Start Video'} />
-      
-
-      <div className="w-px h-16 bg-slate-700 mx-2 hidden sm:block" />
-
-      <ControlButton
-        active={handRaised}
-        onClick={() => setHandRaised(!handRaised)}
-        icon={<HandIcon size={32} />}
-        label={handRaised ? 'Lower Hand' : 'Raise Hand'}
-        accent={true} />
-      
-
-      <ControlButton
-        active={chatOpen}
+    <div
+      className="bg-slate-900 border-t border-slate-800 flex items-center justify-between px-4 py-3 w-full flex-shrink-0"
+      style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}
+    >
+      {/* LEFT: Chat */}
+      <button
         onClick={() => setChatOpen(!chatOpen)}
-        icon={<MessageCircleIcon size={32} />}
-        label="Chat" />
-      
+        aria-label="Toggle chat panel"
+        className={cn(
+          'flex flex-col items-center justify-center w-[72px] h-[72px] sm:w-20 sm:h-20 rounded-2xl gap-1 transition-colors focus-visible:ring-4 focus-visible:ring-primary focus:outline-none',
+          chatOpen
+            ? 'bg-primary text-white'
+            : 'bg-slate-700 text-slate-200 hover:bg-slate-600 active:bg-slate-500'
+        )}
+      >
+        <MessageCircleIcon size={28} />
+        <span className="text-xs font-semibold">Chat</span>
+      </button>
 
-      <div className="w-px h-16 bg-slate-700 mx-2 hidden sm:block" />
+      {/* CENTER: Mic + Raise Hand — primary actions */}
+      <div className="flex items-center gap-3">
+        {/* Microphone — largest button, most important control */}
+        <button
+          onClick={() => setMicOn(!micOn)}
+          aria-label={micOn ? 'Mute microphone' : 'Unmute microphone'}
+          className={cn(
+            'flex flex-col items-center justify-center w-[88px] h-[88px] sm:w-24 sm:h-24 rounded-2xl gap-1 transition-colors focus-visible:ring-4 focus-visible:ring-primary focus:outline-none ring-2 shadow-lg',
+            micOn
+              ? 'bg-slate-600 text-white hover:bg-slate-500 active:bg-slate-400 ring-slate-500'
+              : 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 ring-red-500'
+          )}
+        >
+          {micOn ? <MicIcon size={32} /> : <MicOffIcon size={32} />}
+          <span className="text-xs font-bold">{micOn ? 'Mute' : 'Unmute'}</span>
+        </button>
 
-      <ControlButton
-        active={true}
+        {/* Raise Hand */}
+        <button
+          onClick={() => setHandRaised(!handRaised)}
+          aria-label={handRaised ? 'Lower hand' : 'Raise hand'}
+          className={cn(
+            'flex flex-col items-center justify-center w-[72px] h-[72px] sm:w-20 sm:h-20 rounded-2xl gap-1 transition-colors focus-visible:ring-4 focus-visible:ring-primary focus:outline-none',
+            handRaised
+              ? 'bg-amber-500 text-white hover:bg-amber-600 active:bg-amber-700'
+              : 'bg-slate-700 text-slate-200 hover:bg-slate-600 active:bg-slate-500'
+          )}
+        >
+          <HandIcon
+            size={28}
+            className={handRaised ? 'animate-bounce' : ''}
+          />
+          <span className="text-[10px] sm:text-xs font-semibold leading-tight text-center">
+            {handRaised ? 'Lower' : 'Raise Hand'}
+          </span>
+        </button>
+      </div>
+
+      {/* RIGHT: End Call */}
+      <button
         onClick={handleLeave}
-        icon={<PhoneOffIcon size={32} />}
-        label="Leave"
-        danger={true} />
-      
-    </div>);
-
+        aria-label="Leave meeting"
+        className="flex flex-col items-center justify-center w-[72px] h-[72px] sm:w-20 sm:h-20 rounded-2xl gap-1 transition-colors focus-visible:ring-4 focus-visible:ring-red-400 focus:outline-none bg-red-600 text-white hover:bg-red-700 active:bg-red-800 shadow-lg"
+      >
+        <PhoneOffIcon size={28} />
+        <span className="text-xs font-semibold">Leave</span>
+      </button>
+    </div>
+  );
 }
