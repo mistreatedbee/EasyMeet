@@ -158,7 +158,7 @@ function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             className="text-5xl sm:text-6xl lg:text-[64px] font-extrabold text-ink-primary leading-[1.1] mb-8"
           >
-            Video calls so simple,<br />
+            Online calls so simple,<br />
             <span className="text-primary">it feels like answering the phone.</span>
           </motion.h1>
           <motion.p
@@ -571,14 +571,14 @@ const ContactSection = React.memo(() => {
 
         <div className="flex flex-col sm:flex-row justify-center gap-8 mb-12">
           <a
-            href="tel:18003279633"
+            href="tel:0731531188"
             className="flex items-center justify-center gap-4 text-2xl font-medium text-ink-primary hover:text-primary transition-colors"
           >
             <PhoneIcon size={32} className="text-primary" />
             073 153 1188
           </a>
           <a
-            href="mailto:help@easymeet.example.com"
+            href="https://nextwavedigitalsolutions.co.za"
             className="flex items-center justify-center gap-4 text-2xl font-medium text-ink-primary hover:text-primary transition-colors"
           >
             <MessageCircleIcon size={32} className="text-primary" />
