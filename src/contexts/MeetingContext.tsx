@@ -68,7 +68,8 @@ export function MeetingProvider({ children }: { children: React.ReactNode }) {
       .from('participants')
       .select('*')
       .eq('meeting_id', meetingId)
-      .is('left_at', null);
+      .is('left_at', null)
+      .limit(200);
     if (data) setParticipants(data as Participant[]);
   }, []);
 
@@ -159,6 +160,18 @@ export function MeetingProvider({ children }: { children: React.ReactNode }) {
         setParticipants((prev) =>
           prev.map((p) => p.id === payload.participantId ? { ...p, role: payload.role } : p)
         );
+      });
+
+      insforge.realtime.on('mute_all', () => {
+        if (!mounted) return;
+        setParticipants((prev) =>
+          prev.map((p) => p.role !== 'host' ? { ...p, is_muted: true } : p)
+        );
+      });
+
+      insforge.realtime.on('participant_removed', (payload: { participantId: string }) => {
+        if (!mounted) return;
+        setParticipants((prev) => prev.filter((p) => p.id !== payload.participantId));
       });
     })();
 

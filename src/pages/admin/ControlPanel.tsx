@@ -45,6 +45,8 @@ export function ControlPanel() {
   const [loading, setLoading] = useState(true);
   const [isRecording, setIsRecording] = useState(false);
   const [hostToken, setHostToken] = useState('');
+  const [participantSearch, setParticipantSearch] = useState('');
+  const [showAllParticipants, setShowAllParticipants] = useState(false);
 
   const loadData = useCallback(async (code: string) => {
     const { data: mtg } = await insforge.database
@@ -61,7 +63,8 @@ export function ControlPanel() {
       .select('*')
       .eq('meeting_id', mtg.id)
       .is('left_at', null)
-      .order('joined_at', { ascending: true });
+      .order('joined_at', { ascending: true })
+      .limit(200);
 
     if (parts) {
       const admitted = (parts as Participant[]).filter((p) => p.admitted);
@@ -365,16 +368,38 @@ export function ControlPanel() {
 
           {/* Active Participants */}
           <Card padding="none" className="flex flex-col" style={{ minHeight: '400px' }}>
-            <div className="p-6 border-b border-border flex justify-between items-center bg-slate-50">
-              <h2 className="text-xl font-bold text-ink-primary">
-                Participants ({participants.length})
-              </h2>
+            <div className="p-6 border-b border-border bg-slate-50 space-y-3">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-bold text-ink-primary">
+                  Participants ({participants.length})
+                </h2>
+              </div>
+              <input
+                type="search"
+                placeholder="Search participants…"
+                value={participantSearch}
+                onChange={e => {
+                  setParticipantSearch(e.target.value);
+                  setShowAllParticipants(false);
+                }}
+                className="w-full h-10 px-3 rounded-xl border border-border focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm bg-white"
+              />
             </div>
+            {(() => {
+              const PARTICIPANT_PAGE_SIZE = 50;
+              const filtered = participants.filter(p =>
+                p.name.toLowerCase().includes(participantSearch.toLowerCase())
+              );
+              const displayed = showAllParticipants ? filtered : filtered.slice(0, PARTICIPANT_PAGE_SIZE);
+              const hasMore = !showAllParticipants && filtered.length > PARTICIPANT_PAGE_SIZE;
+              return (
             <div className="flex-grow overflow-y-auto p-2">
-              {participants.length === 0 && (
-                <p className="text-center text-ink-secondary py-8">No participants yet.</p>
+              {filtered.length === 0 && (
+                <p className="text-center text-ink-secondary py-8">
+                  {participantSearch ? 'No participants match your search.' : 'No participants yet.'}
+                </p>
               )}
-              {participants.map((p) => (
+              {displayed.map((p) => (
                 <div key={p.id} className="flex items-center justify-between p-4 hover:bg-slate-50 rounded-xl transition-colors border-b border-border last:border-0">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center text-lg font-bold">
@@ -434,7 +459,19 @@ export function ControlPanel() {
                   )}
                 </div>
               ))}
+              {hasMore && (
+                <div className="p-4 text-center border-t border-border">
+                  <button
+                    onClick={() => setShowAllParticipants(true)}
+                    className="text-primary text-sm font-semibold hover:underline"
+                  >
+                    Load {filtered.length - PARTICIPANT_PAGE_SIZE} more participants
+                  </button>
+                </div>
+              )}
             </div>
+              );
+            })()}
           </Card>
         </div>
       </div>
